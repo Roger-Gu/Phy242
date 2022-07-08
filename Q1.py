@@ -1,6 +1,7 @@
 import numpy as np
 import math
-from scipy.integrate import dblquad
+# from scipy.integrate import dblquad
+from integeration import dblquad
 import matplotlib.pyplot as plt
 
 epsilon_0 = 8.8541878128*(10**-12)
@@ -71,13 +72,17 @@ def diskField(p: Point, R, delta, slient = False):
         print("Error: the point is on the disk")
         return 0
     C = delta * k
-    E_x = Ex(R, p)[0]* C
-    E_y = Ey(R, p)[0]* C
-    E_z = Ez(R, p)[0]* C
+    E_x = Ex(R, p)
+    E_y = Ey(R, p)
+    E_z = Ez(R, p)
+    E_size = math.sqrt(E_x**2 + E_y**2 + E_z**2) * C
+    E_x *= C
+    E_y *= C
+    E_z *= C
     # print the result 
     if not slient:
-        print("The Radius is {}, the field at point ({},{},{}) is {}, {}, {}".format(R, p.x, p.y, p.z, E_x, E_y, E_z))
-    return E_x, E_y, E_z
+        print("The Radius is {}, the field at point ({},{},{}) is {}x, {}y, {}z, with size {}".format(R, p.x, p.y, p.z, E_x, E_y, E_z, E_size))
+    return E_x, E_y, E_z, E_size
 
 # Q3
 # try some examples
@@ -131,17 +136,17 @@ def centralField(R, delta, h):
 h = 10
 p = Point(0,0,h)
 R = 1
-__, __, Ez1 = diskField(p, R, delta)
+__, __, __, E1 = diskField(p, R, delta)
 Ez2 = centralField(R, delta, h)
-print("the relative difference is {}".format(abs((Ez1-Ez2)/Ez1)))
+print("the relative difference is {}".format(abs((E1-Ez2)/Ez2)))
 
 # h = 9999, R = 1
 h = 9999
 p = Point(0,0,h)
 R = 1
-__, __, Ez1 = diskField(p, R, delta)
+__, __, __, E1 = diskField(p, R, delta)
 Ez2 = centralField(R, delta, h)
-print("the relative difference is {}".format(abs((Ez1-Ez2)/Ez1)))
+print("the relative difference is {}".format(abs((E1-Ez2)/Ez2)))
 
 # plot symmetry
 ax = plt.figure().add_subplot(projection='3d')
@@ -179,7 +184,7 @@ for i in np.arange(len(x)):
         w[-1].append([])
         for k in np.arange(len(x[0][0])):
             # after investigation on the meshgrid function, it very wierdly is in the form y-x-z loop
-            E_x, E_y, E_z = disField1(x[i][j][k],y[i][j][k],z[i][j][k])
+            E_x, E_y, E_z, __ = disField1(x[i][j][k],y[i][j][k],z[i][j][k])
             u[-1][-1].append(E_x)
             v[-1][-1].append(E_y)
             # Ez is way too large in comparison to the other two, divide by constant just to show symmetry

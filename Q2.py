@@ -64,13 +64,17 @@ def rectangleField(p: Point, a, b, delta, slient = False):
         print("Error: the point is on the rectangle")
         return 0
     C = delta * k
-    E_x = Ex(a, b, p)[0]* C
-    E_y = Ey(a, b, p)[0]* C
-    E_z = Ez(a, b, p)[0]* C
+    E_x = Ex(a, b, p)[0]
+    E_y = Ey(a, b, p)[0]
+    E_z = Ez(a, b, p)[0]
+    E_size = math.sqrt(E_x**2 + E_y**2 + E_z**2) * C
+    E_x *= C
+    E_y *= C
+    E_z *= C
     # print the result 
     if not slient:
-        print("The rectangle is {}*{}, the field at point ({},{},{}) is {}, {}, {}".format(a, b, p.x, p.y, p.z, E_x, E_y, E_z))
-    return E_x, E_y, E_z
+        print("The rectangle is {}*{}, the field at point ({},{},{}) is {}x, {}y, {}z, with size {}".format(a, b, p.x, p.y, p.z, E_x, E_y, E_z, E_size))
+    return E_x, E_y, E_z, E_size
 
 # Q3
 # try some examples
@@ -115,20 +119,18 @@ h = 1
 p = Point(0,0,h)
 a = 10000
 b = 10000
-Ex1, Ey1, Ez1 = rectangleField(p, a, b, delta)
-E1_size = math.sqrt(Ex1**2+Ey1**2+Ez1**2)
+__, __, __, E1 = rectangleField(p, a, b, delta)
 Ez2 = planeField(delta, h)
-print("the relative difference is {}".format(abs((E1_size-Ez2)/Ez1)))
+print("the relative difference is {}".format(abs((E1-Ez2)/Ez2)))
 
 # smaller plane
 h = 1
 p = Point(0,0,h)
 a = 100
 b = 100
-Ex1, Ey1, Ez1 = rectangleField(p, a, b, delta)
-E1_size = math.sqrt(Ex1**2+Ey1**2+Ez1**2)
+__, __, __, E1 = rectangleField(p, a, b, delta)
 Ez2 = planeField(delta, h)
-print("the relative difference is {}".format(abs((E1_size-Ez2)/Ez1)))
+print("the relative difference is {}".format(abs((E1-Ez2)/Ez2)))
 
 # plot symmetry
 ax = plt.figure().add_subplot(projection='3d')
@@ -153,7 +155,7 @@ for i in np.arange(len(x)):
         w[-1].append([])
         for k in np.arange(len(x[0][0])):
             # after investigation on the meshgrid function, it very wierdly is in the form y-x-z loop
-            E_x, E_y, E_z = recField1(x[i][j][k],y[i][j][k],z[i][j][k])
+            E_x, E_y, E_z, __ = recField1(x[i][j][k],y[i][j][k],z[i][j][k])
             u[-1][-1].append(E_x)
             v[-1][-1].append(E_y)
             # Ez is way too large in comparison to the other two, divide by constant just to show symmetry
