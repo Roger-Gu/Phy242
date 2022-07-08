@@ -81,9 +81,24 @@ def diskField(p: Point, R, delta, slient = False):
 
 # Q3
 # try some examples
+# p = (1,0,0), R = 1, delta = 1
+delta = 1
+p = Point(1,0,0)
+R = 1
+diskField(p, R, delta)
 # p = (1,1,0), R = 1, delta = 1
 delta = 1
 p = Point(1,1,0)
+R = 1
+diskField(p, R, delta)
+# p = (1,0,1), R = 1, delta = 1
+delta = 1
+p = Point(1,0,1)
+R = 1
+diskField(p, R, delta)
+# p = (0,1,1), R = 1, delta = 1
+delta = 1
+p = Point(0,1,1)
 R = 1
 diskField(p, R, delta)
 # p = (0,0,1), R = 2, delta = 1
@@ -96,9 +111,9 @@ delta = 80
 p = Point(1,1,1)
 R = 1
 diskField(p, R, delta)
-# p = (1,1,0), R = 2, delta = 1
+# p = (0,0,-1), R = 2, delta = 1
 delta = 1
-p = Point(1,1,0)
+p = Point(0,0,-1)
 R = 2
 diskField(p, R, delta)
 
@@ -133,29 +148,42 @@ ax = plt.figure().add_subplot(projection='3d')
 # Make the grid
 x, y, z = np.meshgrid(np.arange(-10, 10, 2),
                       np.arange(-10, 10, 2),
-                      np.arange(1, 11 ,1))
+                      np.arange(-10, 10 ,4))
 
-# wrapper for diskField, but take constant delta=1, R =3, and x,y,z instead of a point p
+# wrapper for diskField, but take constant delta=1, R =5, and x,y,z instead of a point p
 def disField1(x,y,z):
     p = Point(x,y,z)
-    return diskField(p,10,1,True)
+    return diskField(p,5,1,True)
 
 u,v,w = [], [], []
-for i in np.arange(-10, 10, 2):
+# plot symmetry
+ax = plt.figure().add_subplot(projection='3d')
+# Make the grid
+x, y, z = np.meshgrid(np.arange(-10, 10, 2),
+                      np.arange(-10, 10, 2),
+                      np.arange(-10, 10 ,4))
+
+# wrapper for diskField, but take constant delta=1, R =5, and x,y,z instead of a point p
+def disField1(x,y,z):
+    p = Point(x,y,z)
+    return diskField(p,5,1,True)
+
+u,v,w = [], [], []
+for i in np.arange(len(x)):
     u.append([])
     v.append([])
     w.append([])
-    for j in np.arange(-10, 10, 2):
+    for j in np.arange(len(x[0])):
         u[-1].append([])
         v[-1].append([])
         w[-1].append([])
-        for k in np.arange(1, 11, 1):
-            E_x, E_y, E_z = disField1(i,j,k)
+        for k in np.arange(len(x[0][0])):
+            # after investigation on the meshgrid function, it very wierdly is in the form y-x-z loop
+            E_x, E_y, E_z = disField1(x[i][j][k],y[i][j][k],z[i][j][k])
             u[-1][-1].append(E_x)
             v[-1][-1].append(E_y)
             # Ez is way too large in comparison to the other two, divide by constant just to show symmetry
-            w[-1][-1].append(E_z/10)
+            w[-1][-1].append(E_z/2)
 
-ax.quiver(x, y, z, u, v, w, length=0.1, normalize=False)
-
+ax.quiver(x, y, z, u, v, w, length=0.7, normalize=False)
 plt.show()
